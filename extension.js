@@ -12,7 +12,6 @@ function activate(context) {
       vscode.ViewColumn.One,
       {}
     );
-
     // 👇 Modify this to your actual script path or shell command
     const scriptPath = path.join(__dirname, './your-script.sh');
 
