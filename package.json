@@ -3,6 +3,7 @@
   "displayName": "linkIT",
   "description": "",
   "version": "0.0.1",
+  "publisher":"repolinker",
   "engines": {
     "vscode": "^1.99.0"
   },
