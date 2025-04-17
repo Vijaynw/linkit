@@ -1,36 +1,42 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
+const { exec } = require('child_process');
+const path = require('path');
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-
-/**
- * @param {vscode.ExtensionContext} context
- */
 function activate(context) {
+  console.log('Extension "linkit" is now active!');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "linkit" is now active!');
+  let disposable = vscode.commands.registerCommand('linkit.runShellScript', function () {
+    const panel = vscode.window.createWebviewPanel(
+      'shellRunner',
+      'Shell Script Output',
+      vscode.ViewColumn.One,
+      {}
+    );
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('linkit.helloWorld', function () {
-		// The code you place here will be executed every time your command is executed
+    // 👇 Modify this to your actual script path or shell command
+    const scriptPath = path.join(__dirname, './your-script.sh');
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from linkIT!');
-	});
+    exec(`bash "${scriptPath}"`, (err, stdout, stderr) => {
+      if (err) {
+        panel.webview.html = `<h2>Error</h2><pre>${err.message}</pre>`;
+        return;
+      }
 
-	context.subscriptions.push(disposable);
+      if (stderr) {
+        panel.webview.html = `<h2>Shell Error</h2><pre>${stderr}</pre>`;
+        return;
+      }
+
+      panel.webview.html = `<h2>Shell Output</h2><pre>${stdout}</pre>`;
+    });
+  });
+
+  context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
 function deactivate() {}
 
 module.exports = {
-	activate,
-	deactivate
-}
+  activate,
+  deactivate
+};
